@@ -1,0 +1,23 @@
+{
+  "name": "@toolkitapi/node-sdk",
+  "version": "1.0.0",
+  "description": "TypeScript SDK for ToolkitAPI.io",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "prepack": "npm run build"
+  },
+  "keywords": [
+    "toolkitapi",
+    "sdk",
+    "api"
+  ],
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}
