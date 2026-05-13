@@ -29,7 +29,6 @@ export type { Scrape } from "./toolkit/scrape";
 export type { Textanalysis } from "./toolkit/textanalysis";
 export type { Webhook } from "./toolkit/webhook";
 export declare class ToolkitAPI {
-    private client;
     readonly analytics: Analytics;
     readonly auth: Auth;
     readonly barcode: Barcode;

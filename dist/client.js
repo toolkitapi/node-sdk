@@ -11,7 +11,7 @@ class HttpClient {
     }
     async request(path, options = {}) {
         const { method = "GET", headers = {}, body, params } = options;
-        const url = new URL(`${this.baseUrl}${path}`);
+        const url = new URL(`${this.baseUrl.replace(/\/$/, "")}/${path}`);
         if (params) {
             for (const [key, value] of Object.entries(params)) {
                 if (value !== undefined && value !== null) {
@@ -30,7 +30,7 @@ class HttpClient {
         });
         if (!response.ok) {
             const detail = await response.text().catch(() => "");
-            throw new Error(`HTTP ${response.status}: ${detail || response.statusText}`);
+            throw new Error(`HTTP ${response.status} ${url.toString()}: ${detail || response.statusText}`);
         }
         return response.json();
     }

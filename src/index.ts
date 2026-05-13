@@ -34,7 +34,6 @@ export type { Scrape } from "./toolkit/scrape";
 export type { Textanalysis } from "./toolkit/textanalysis";
 export type { Webhook } from "./toolkit/webhook";
 export class ToolkitAPI {
-  private client: HttpClient;
 
   readonly analytics: Analytics;
   readonly auth: Auth;
@@ -52,21 +51,25 @@ export class ToolkitAPI {
   readonly webhook: Webhook;
 
   constructor(baseUrl: string, apiKey: string) {
-    this.client = new HttpClient(baseUrl, apiKey);
-    this.analytics = new Analytics(this.client);
-    this.auth = new Auth(this.client);
-    this.barcode = new Barcode(this.client);
-    this.convert = new Convert(this.client);
-    this.devtools = new Devtools(this.client);
-    this.dns = new Dns(this.client);
-    this.email = new Email(this.client);
-    this.geo = new Geo(this.client);
-    this.image = new Image(this.client);
-    this.media = new Media(this.client);
-    this.pdf = new Pdf(this.client);
-    this.scrape = new Scrape(this.client);
-    this.textanalysis = new Textanalysis(this.client);
-    this.webhook = new Webhook(this.client);
+    const { hostname } = new URL(baseUrl);
+    const parts = hostname.split(".");
+    const rootDomain = parts.length > 2 ? parts.slice(-2).join(".") : hostname;
+    const SUBDOMAIN: Record<string, string> = { devtools: "dev", media: "youtube" };
+    const mkClient = (toolkit: string) => new HttpClient(`https://${SUBDOMAIN[toolkit] ?? toolkit}.${rootDomain}`, apiKey);
+    this.analytics = new Analytics(mkClient("analytics"));
+    this.auth = new Auth(mkClient("auth"));
+    this.barcode = new Barcode(mkClient("barcode"));
+    this.convert = new Convert(mkClient("convert"));
+    this.devtools = new Devtools(mkClient("devtools"));
+    this.dns = new Dns(mkClient("dns"));
+    this.email = new Email(mkClient("email"));
+    this.geo = new Geo(mkClient("geo"));
+    this.image = new Image(mkClient("image"));
+    this.media = new Media(mkClient("media"));
+    this.pdf = new Pdf(mkClient("pdf"));
+    this.scrape = new Scrape(mkClient("scrape"));
+    this.textanalysis = new Textanalysis(mkClient("textanalysis"));
+    this.webhook = new Webhook(mkClient("webhook"));
   }
 
   close(): void {

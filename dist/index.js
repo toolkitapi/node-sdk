@@ -34,7 +34,6 @@ const webhook_1 = require("./toolkit/webhook");
 __exportStar(require("./client"), exports);
 __exportStar(require("./types"), exports);
 class ToolkitAPI {
-    client;
     analytics;
     auth;
     barcode;
@@ -50,21 +49,25 @@ class ToolkitAPI {
     textanalysis;
     webhook;
     constructor(baseUrl, apiKey) {
-        this.client = new client_1.HttpClient(baseUrl, apiKey);
-        this.analytics = new analytics_1.Analytics(this.client);
-        this.auth = new auth_1.Auth(this.client);
-        this.barcode = new barcode_1.Barcode(this.client);
-        this.convert = new convert_1.Convert(this.client);
-        this.devtools = new devtools_1.Devtools(this.client);
-        this.dns = new dns_1.Dns(this.client);
-        this.email = new email_1.Email(this.client);
-        this.geo = new geo_1.Geo(this.client);
-        this.image = new image_1.Image(this.client);
-        this.media = new media_1.Media(this.client);
-        this.pdf = new pdf_1.Pdf(this.client);
-        this.scrape = new scrape_1.Scrape(this.client);
-        this.textanalysis = new textanalysis_1.Textanalysis(this.client);
-        this.webhook = new webhook_1.Webhook(this.client);
+        const { hostname } = new URL(baseUrl);
+        const parts = hostname.split(".");
+        const rootDomain = parts.length > 2 ? parts.slice(-2).join(".") : hostname;
+        const SUBDOMAIN = { devtools: "dev", media: "youtube" };
+        const mkClient = (toolkit) => new client_1.HttpClient(`https://${SUBDOMAIN[toolkit] ?? toolkit}.${rootDomain}`, apiKey);
+        this.analytics = new analytics_1.Analytics(mkClient("analytics"));
+        this.auth = new auth_1.Auth(mkClient("auth"));
+        this.barcode = new barcode_1.Barcode(mkClient("barcode"));
+        this.convert = new convert_1.Convert(mkClient("convert"));
+        this.devtools = new devtools_1.Devtools(mkClient("devtools"));
+        this.dns = new dns_1.Dns(mkClient("dns"));
+        this.email = new email_1.Email(mkClient("email"));
+        this.geo = new geo_1.Geo(mkClient("geo"));
+        this.image = new image_1.Image(mkClient("image"));
+        this.media = new media_1.Media(mkClient("media"));
+        this.pdf = new pdf_1.Pdf(mkClient("pdf"));
+        this.scrape = new scrape_1.Scrape(mkClient("scrape"));
+        this.textanalysis = new textanalysis_1.Textanalysis(mkClient("textanalysis"));
+        this.webhook = new webhook_1.Webhook(mkClient("webhook"));
     }
     close() {
         // HttpClient uses fetch; no explicit cleanup needed
